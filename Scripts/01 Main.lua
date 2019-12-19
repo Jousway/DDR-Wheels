@@ -1,5 +1,21 @@
 DDR ={}
 
+if not LoadModule then 
+	function LoadModule(ModuleName,...)
+	
+		local Path = THEME:GetCurrentThemeDirectory().."Modules/"..ModuleName
+	
+		if not FILEMAN:DoesFileExist(Path) then
+			Path = "Appearance/Themes/_fallback/Modules/"..ModuleName
+		end
+	
+		if ... then
+			return loadfile(Path)(...)
+		end
+		return loadfile(Path)()
+	end
+end
+
 function DDR.Resize(width,height,setwidth,sethight)
 
 	if height >= sethight and width >= setwidth then
