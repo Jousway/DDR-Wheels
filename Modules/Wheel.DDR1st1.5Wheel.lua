@@ -8,6 +8,8 @@ local DiffColors={
 	color("#888888") -- Difficulty_Edit
 }
 
+-- Difficulty Names.
+-- https://en.wikipedia.org/wiki/Dance_Dance_Revolution#Difficulty
 local DiffNames={
 	"EASY", -- Difficulty_Beginner
 	"BASIC", -- Difficulty_Easy
@@ -293,12 +295,16 @@ return function(Style)
 					-- If both players are joined, We want to unjoin the player that pressed back.
 					GAMESTATE:UnjoinPlayer(self.pn)
 					Joined[self.pn] = false
+					
+					-- A Player left, Change bakc to Single.
+					self:GetChild("Style"):settext("SINGLE")
 				else
 					-- Go to the previous screen.
 					SCREENMAN:GetTopScreen():SetNextScreenName(SCREENMAN:GetTopScreen():GetPrevScreenName()):StartTransitioningScreen("SM_GoToNextScreen") 
 				end
 			end
 		end,
+		
 		-- Do stuff when a user presses the Start on Pad or Menu buttons.
 		StartCommand=function(self)
 			-- Check if we want to go to ScreenPlayerOptions instead of ScreenGameplay.
@@ -349,7 +355,6 @@ return function(Style)
 				-- Wait 0.4 sec before we go to next screen.
 				self:sleep(0.4):queuecommand("StartSong")
 			else
-			
 				-- If no player is active Join.
 				GAMESTATE:JoinPlayer(self.pn)
 				
@@ -358,6 +363,11 @@ return function(Style)
 				
 				-- Add to joined list.
 				Joined[self.pn] = true
+				
+				-- Set Style Text to VERSUS when 2 Players.
+				if Joined[PLAYER_1] and Joined[PLAYER_2] then
+					self:GetChild("Style"):settext("VERSUS")
+				end
 			end			
 		end,
 		
@@ -378,7 +388,7 @@ return function(Style)
 			}
 		},
 		CDslice, -- Load CD Slices.
-		CDs, -- Load CDs.
+		CDs..{OnCommand=function(self) self:y(-25) end}, -- Load CDs.
 		
 		-- Load the Global Centered Banner.
 		Def.Sprite{
@@ -403,25 +413,35 @@ return function(Style)
 			Name="Difficulty",
 			Font="_open sans Bold 40px",
 			OnCommand=function(self)
-				self:xy(SCREEN_CENTER_X-220,SCREEN_CENTER_Y+120):diffuse(1,1,0,1):strokecolor(0,0,1,1):zoom(.5)
+				self:xy(SCREEN_CENTER_X-220,SCREEN_CENTER_Y+110):diffuse(1,1,0,1):strokecolor(0,0,1,1):zoom(.5)
+			end
+		},
+		
+		-- Load the Syle Text.
+		Def.BitmapText{
+			Name="Style",
+			Text="SINGLE",
+			Font="_open sans Bold 40px",
+			OnCommand=function(self)
+				self:xy(SCREEN_CENTER_X-220,SCREEN_CENTER_Y+130):diffuse(1,1,0,1):strokecolor(0,0,1,1):zoom(.5)
 			end
 		},
 		
 		-- Load the arrow for the Left size.
 		TriSel..{
 			Name="Left", 
-			OnCommand=function(self) self:xy(SCREEN_CENTER_X-110,SCREEN_CENTER_Y+50):rotationz(-90):diffuse(1,0,0,1) end,
+			OnCommand=function(self) self:xy(SCREEN_CENTER_X-120,SCREEN_CENTER_Y+50):rotationz(-90):diffuse(1,0,0,1) end,
 			ColourCommand=function(self) self:sleep(0.02):diffuse(0,0,1,1):sleep(0.02):diffuse(1,1,1,1):sleep(0.02):diffuse(1,0,0,1) end
 		},
 		
 		-- Load the arrow for the Right size.
 		TriSel..{
 			Name="Right", 
-			OnCommand=function(self) self:xy(SCREEN_CENTER_X+110,SCREEN_CENTER_Y+50):rotationz(90):diffuse(1,0,0,1) end,
+			OnCommand=function(self) self:xy(SCREEN_CENTER_X+120,SCREEN_CENTER_Y+50):rotationz(90):diffuse(1,0,0,1) end,
 			ColourCommand=function(self) self:sleep(0.02):diffuse(0,0,1,1):sleep(0.02):diffuse(1,1,1,1):sleep(0.02):diffuse(1,0,0,1) end
 		},
 		
 		-- The Difficulty Feet Meter.
-		Diff..{OnCommand=function(self) self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y+110) end}
+		Diff..{OnCommand=function(self) self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y+130) end}
 	}
 end
