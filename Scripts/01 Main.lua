@@ -1,3 +1,4 @@
+-- LoadModule is by default included in 5.3, If people use 5.1 load 5.3's version manualy.
 if not LoadModule then 
 	function LoadModule(ModuleName,...)
 	
@@ -14,8 +15,10 @@ if not LoadModule then
 	end
 end
 
+-- We hate using globals, So use 1 global table.
 DDR = {}
 
+-- Change Difficulties to numbers.
 DDR.DiffTab = { 
 	["Difficulty_Beginner"] = 1,
 	["Difficulty_Easy"] = 2,
@@ -25,6 +28,7 @@ DDR.DiffTab = {
 	["Difficulty_Edit"] = 6
 }
 
+-- Resize function, We use this to resize images to size while keeping aspect ratio.
 function DDR.Resize(width,height,setwidth,sethight)
 
 	if height >= sethight and width >= setwidth then
@@ -42,6 +46,9 @@ function DDR.Resize(width,height,setwidth,sethight)
 	end
 end
 
+-- Main Input Function.
+-- We use this so we can do ButtonCommand.
+-- Example: MenuLeftCommand=function(self) end.
 function DDR.Input(self)
 	return function(event)
 		if not event.PlayerNumber then return end
