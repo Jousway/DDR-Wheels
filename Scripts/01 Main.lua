@@ -1,5 +1,3 @@
-DDR ={}
-
 if not LoadModule then 
 	function LoadModule(ModuleName,...)
 	
@@ -15,6 +13,17 @@ if not LoadModule then
 		return loadfile(Path)()
 	end
 end
+
+DDR = {}
+
+DDR.DiffTab = { 
+	["Difficulty_Beginner"] = 1,
+	["Difficulty_Easy"] = 2,
+	["Difficulty_Medium"] = 3,
+	["Difficulty_Hard"] = 4,
+	["Difficulty_Challenge"] = 5,
+	["Difficulty_Edit"] = 6
+}
 
 function DDR.Resize(width,height,setwidth,sethight)
 

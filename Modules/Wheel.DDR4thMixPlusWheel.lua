@@ -1,44 +1,5 @@
-local DiffTab = { 
-	["Difficulty_Beginner"] = 1,
-	["Difficulty_Easy"] = 2,
-	["Difficulty_Medium"] = 3,
-	["Difficulty_Hard"] = 4,
-	["Difficulty_Challenge"] = 5,
-	["Difficulty_Edit"] = 6
-}
 local DiffColors={color("#88ffff"), color("#ffff88"), color("#ff8888"), color("#88ff88"), color("#8888ff"), color("#888888")}
 local DiffNames={"Practice", "Basic", "Trick", "Maniac", "Extra", "Edit"}
-
-local function LoadSongs(Style)
-
-	local AllCompSongs = {}
-		
-	for _, CurSong in pairs(SONGMAN:GetAllSongs()) do
-		local DiffCon = {}
-		local CurSongCon = {CurSong}		
-		for i, CurStep in ipairs(CurSong:GetAllSteps()) do
-			if string.find(CurStep:GetStepsType():lower(), Style) then
-				DiffCon[tonumber(DiffTab[CurStep:GetDifficulty()])] = CurStep	
-			end
-		end
-		
-		local Keys = {}
-		for k in pairs(DiffCon) do table.insert(Keys, k) end
-		table.sort(Keys)
-		
-		for _, k in pairs(Keys) do
-			if DiffCon[k] then
-				CurSongCon[#CurSongCon+1] = DiffCon[k]
-			end
-		end
-		
-		if CurSongCon[2] then				
-			AllCompSongs[#AllCompSongs+1] = CurSongCon
-		end
-	end	
-	
-	return AllCompSongs
-end
 
 local SongPos = 1
 if not CurSong then CurSong = 1 end
@@ -92,8 +53,8 @@ local function ChangeSelection(self,offset,Songs)
 			self:GetChild("SliderCon"):GetChild("Slider"..i):GetChild("DiffCon"):GetChild("DiffDisplay"..i3):GetChild("level"):diffusealpha(0)
 			
 			if #Songs[pos] > i3 then
-				self:GetChild("SliderCon"):GetChild("Slider"..i):GetChild("DiffCon"):GetChild("DiffDisplay"..i3):GetChild("Feet"):diffuse(DiffColors[DiffTab[Songs[pos][i3+1]:GetDifficulty()]])
-				self:GetChild("SliderCon"):GetChild("Slider"..i):GetChild("DiffCon"):GetChild("DiffDisplay"..i3):GetChild("level"):diffuse(DiffColors[DiffTab[Songs[pos][i3+1]:GetDifficulty()]]):settext(Songs[pos][i3+1]:GetMeter())
+				self:GetChild("SliderCon"):GetChild("Slider"..i):GetChild("DiffCon"):GetChild("DiffDisplay"..i3):GetChild("Feet"):diffuse(DiffColors[DDR.DiffTab[Songs[pos][i3+1]:GetDifficulty()]])
+				self:GetChild("SliderCon"):GetChild("Slider"..i):GetChild("DiffCon"):GetChild("DiffDisplay"..i3):GetChild("level"):diffuse(DiffColors[DDR.DiffTab[Songs[pos][i3+1]:GetDifficulty()]]):settext(Songs[pos][i3+1]:GetMeter())
 			end
 		end			
 	end	
@@ -140,19 +101,19 @@ local function StartSelection(self,Songs)
 	for i = 1,#Songs[CurSong]-1 do
 		if i > 5 then break end
 		for i2 = 1,9 do
-			self:GetChild("Diffs"):GetChild("Feet"..i..i2):sleep(.5):linear(.5):diffuse(DiffColors[DiffTab[Songs[CurSong][i+1]:GetDifficulty()]]):diffusealpha(.5)
+			self:GetChild("Diffs"):GetChild("Feet"..i..i2):sleep(.5):linear(.5):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][i+1]:GetDifficulty()]]):diffusealpha(.5)
 		end
 		for i2 = 1,Songs[CurSong][i+1]:GetMeter() do
 			if i2 > 9 then break end
 			self:GetChild("Diffs"):GetChild("Feet"..i..i2):diffusealpha(1)
 		end
 		if Joined[PLAYER_1] then
-			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."1"):GetChild("DiffCon"):sleep(.5):linear(.5):diffuse(DiffColors[DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
-			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."1"):GetChild("DiffName"):sleep(.5):linear(.5):diffuse(DiffColors[DiffTab[Songs[CurSong][i+1]:GetDifficulty()]]):settext(DiffNames[DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
+			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."1"):GetChild("DiffCon"):sleep(.5):linear(.5):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
+			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."1"):GetChild("DiffName"):sleep(.5):linear(.5):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][i+1]:GetDifficulty()]]):settext(DiffNames[DDR.DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
 		end
 		if Joined[PLAYER_2] then
-			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."2"):GetChild("DiffCon"):sleep(.5):linear(.5):diffuse(DiffColors[DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
-			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."2"):GetChild("DiffName"):sleep(.5):linear(.5):diffuse(DiffColors[DiffTab[Songs[CurSong][i+1]:GetDifficulty()]]):settext(DiffNames[DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
+			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."2"):GetChild("DiffCon"):sleep(.5):linear(.5):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
+			self:GetChild("Diffs"):GetChild("DiffSelector"..i.."2"):GetChild("DiffName"):sleep(.5):linear(.5):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][i+1]:GetDifficulty()]]):settext(DiffNames[DDR.DiffTab[Songs[CurSong][i+1]:GetDifficulty()]])
 		end
 	end	
 	self:sleep(1):queuecommand("DiffSelection")
@@ -172,9 +133,9 @@ local function MoveDifficulty(self,offset,Songs)
 	end
 end
 
-local function MusicWheel()
+return function(Style)
 
-	local Songs = LoadSongs("dance_single")
+	local Songs = LoadModule("Songs.Loader.lua")(Style)
 	local StartOptions = false
 	
 	local Slider = Def.ActorFrame{Name="SliderCon"}
@@ -185,6 +146,7 @@ local function MusicWheel()
 		local pos = CurSong+i-4
 		if pos > #Songs then pos = (CurSong+i-4)-#Songs end
 		if pos < 1 then pos = #Songs+(CurSong+i-4) end
+		if pos > #Songs then pos = 1 CurSong = 1 end
 		
 		local DiffDisplay = Def.ActorFrame{Name="DiffCon"}
 		
@@ -201,7 +163,7 @@ local function MusicWheel()
 						self:zoom(.075):x(-56+(15*i2)):diffusealpha(0)
 				
 						if #Songs[pos] > i2 then
-							self:diffuse(DiffColors[DiffTab[Songs[pos][i2+1]:GetDifficulty()]])
+							self:diffuse(DiffColors[DDR.DiffTab[Songs[pos][i2+1]:GetDifficulty()]])
 						end
 					end
 				},
@@ -212,7 +174,7 @@ local function MusicWheel()
 						self:zoom(.25):x(-49+(15*i2))
 						
 						if #Songs[pos] > i2 then
-							self:diffuse(DiffColors[DiffTab[Songs[pos][i2+1]:GetDifficulty()]]):settext(Songs[pos][i2+1]:GetMeter())
+							self:diffuse(DiffColors[DDR.DiffTab[Songs[pos][i2+1]:GetDifficulty()]]):settext(Songs[pos][i2+1]:GetMeter())
 						end
 					end
 				}
@@ -415,5 +377,3 @@ local function MusicWheel()
 	}
 	
 end
-
-return MusicWheel()

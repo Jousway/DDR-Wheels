@@ -1,44 +1,5 @@
-local DiffTab = { 
-	["Difficulty_Beginner"] = 1,
-	["Difficulty_Easy"] = 2,
-	["Difficulty_Medium"] = 3,
-	["Difficulty_Hard"] = 4,
-	["Difficulty_Challenge"] = 5,
-	["Difficulty_Edit"] = 6
-}
 local DiffColors={color("#88ffff"), color("#ffff88"), color("#ff8888"), color("#88ff88"), color("#8888ff"), color("#888888")}
 local DiffNames={"Easy", "Basic", "Another", "Maniac", "Extra", "Edit"}
-
-local function LoadSongs(Style)
-
-	local AllCompSongs = {}
-		
-	for _, CurSong in pairs(SONGMAN:GetAllSongs()) do
-		local DiffCon = {}
-		local CurSongCon = {CurSong}		
-		for i, CurStep in ipairs(CurSong:GetAllSteps()) do
-			if string.find(CurStep:GetStepsType():lower(), Style) then
-				DiffCon[tonumber(DiffTab[CurStep:GetDifficulty()])] = CurStep	
-			end
-		end
-		
-		local Keys = {}
-		for k in pairs(DiffCon) do table.insert(Keys, k) end
-		table.sort(Keys)
-		
-		for _, k in pairs(Keys) do
-			if DiffCon[k] then
-				CurSongCon[#CurSongCon+1] = DiffCon[k]
-			end
-		end
-		
-		if CurSongCon[2] then				
-			AllCompSongs[#AllCompSongs+1] = CurSongCon
-		end
-	end	
-	
-	return AllCompSongs
-end
 
 if not CurSong then CurSong = 1 end
 if not Joined then Joined = {} end
@@ -106,7 +67,7 @@ local function MoveDifficulty(self,offset,Songs)
 
 
 	for i = 1,8 do
-		self:GetChild("Diffs"):GetChild("Feet"..i):diffuse(DiffColors[DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]]):diffusealpha(0)
+		self:GetChild("Diffs"):GetChild("Feet"..i):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]]):diffusealpha(0)
 	end
 	
 	local DiffCount = Songs[CurSong][CurDiff]:GetMeter()
@@ -116,12 +77,12 @@ local function MoveDifficulty(self,offset,Songs)
 		self:GetChild("Diffs"):GetChild("Feet"..i):diffusealpha(1):x(30*(i-((DiffCount/2)+.5)))
 	end
 	
-	self:GetChild("Difficulty"):settext(DiffNames[DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]])
+	self:GetChild("Difficulty"):settext(DiffNames[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]])
 end
 
-local function MusicWheel()
+return function(Style)
 
-	local Songs = LoadSongs("dance_single")
+	local Songs = LoadModule("Songs.Loader.lua")(Style)
 	local StartOptions = false
 	
 	local CDs = Def.ActorFrame{
@@ -140,6 +101,8 @@ local function MusicWheel()
 		local pos = CurSong+i-5
 		if pos > #Songs then pos = (CurSong+i-5)-#Songs end
 		if pos < 1 then pos = #Songs+(CurSong+i-5) end
+		if pos > #Songs then pos = 1 CurSong = 1 end
+		if pos > #Songs then pos = 1 CurSong = 1 end
 		
 		CDslice[#CDslice+1] = Def.Sprite{
 			Name="CDSlice"..i,
@@ -316,5 +279,3 @@ local function MusicWheel()
 		Diff..{OnCommand=function(self) self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y+110) end}
 	}
 end
-
-return MusicWheel()
