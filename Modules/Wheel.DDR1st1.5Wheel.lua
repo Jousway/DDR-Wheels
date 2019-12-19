@@ -266,7 +266,7 @@ return function(Style)
 			self:GetChild("Left"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
-				self:queuecommand("Colour")
+				self:GetChild("Left"):queuecommand("Colour")
 			end
 		end,
 		
@@ -275,7 +275,7 @@ return function(Style)
 			self:GetChild("Right"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
-				self:queuecommand("Colour")
+				self:GetChild("Right"):queuecommand("Colour")
 			end
 		end,
 		
