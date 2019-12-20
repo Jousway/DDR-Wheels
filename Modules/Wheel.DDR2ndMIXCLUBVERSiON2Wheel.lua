@@ -72,7 +72,7 @@ local function MoveSelection(self,offset,Songs)
 
 	-- For every CD on the wheel, Rotate it by 360/37, 37 being the amount of CDs.
 	for i = 1,37 do
-		self:GetChild("CDCon"):GetChild("CD"..i):linear(.1):addrotationz((360/37)*offset):y(SCREEN_CENTER_Y-80)
+		self:GetChild("CDCon"):GetChild("CD"..i):linear(.1):addrotationz(((360/37)*offset)*-1):y(SCREEN_CENTER_Y-80)
 		-- Do a diffrent effect for the front most CD.
 		if i == CDSwitch then
 			self:GetChild("CDCon"):GetChild("CD"..i):y(SCREEN_CENTER_Y-60)
@@ -299,7 +299,7 @@ return function(Style)
 		end,
 		
 		-- Do stuff when a user presses left on Pad or Menu buttons.
-		MenuLeftCommand=function(self) MoveSelection(self,1,Songs) MoveDifficulty(self,0,Songs)
+		MenuLeftCommand=function(self) MoveSelection(self,-1,Songs) MoveDifficulty(self,0,Songs)
 			self:GetChild("Left"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
@@ -308,7 +308,7 @@ return function(Style)
 		end,
 		
 		-- Do stuff when a user presses Right on Pad or Menu buttons.
-		MenuRightCommand=function(self) MoveSelection(self,-1,Songs) MoveDifficulty(self,0,Songs)
+		MenuRightCommand=function(self) MoveSelection(self,1,Songs) MoveDifficulty(self,0,Songs)
 			self:GetChild("Right"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
