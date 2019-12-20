@@ -411,7 +411,7 @@ return function(Style)
 		-- Load the Difficulty Text.
 		Def.BitmapText{
 			Name="Difficulty",
-			Font="_open sans Bold 40px",
+			Font="_open sans 40px",
 			OnCommand=function(self)
 				self:xy(SCREEN_CENTER_X-220,SCREEN_CENTER_Y+110):diffuse(1,1,0,1):strokecolor(0,0,1,1):zoom(.5)
 			end
@@ -421,7 +421,7 @@ return function(Style)
 		Def.BitmapText{
 			Name="Style",
 			Text="SINGLE",
-			Font="_open sans Bold 40px",
+			Font="_open sans 40px",
 			OnCommand=function(self)
 				self:xy(SCREEN_CENTER_X-220,SCREEN_CENTER_Y+130):diffuse(1,1,0,1):strokecolor(0,0,1,1):zoom(.5)
 			end
