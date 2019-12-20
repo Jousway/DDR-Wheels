@@ -18,6 +18,14 @@ end
 -- We hate using globals, So use 1 global table.
 DDR = {}
 
+function Actor:ForParent(Amount)
+	local CurSelf = self
+	for i = 1,Amount do
+		CurSelf = CurSelf:GetParent()
+	end
+	return CurSelf
+end
+
 -- Change Difficulties to numbers.
 DDR.DiffTab = { 
 	["Difficulty_Beginner"] = 1,

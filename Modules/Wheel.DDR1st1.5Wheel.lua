@@ -199,8 +199,7 @@ return function(Style)
 			Def.ActorProxy {
 				Name="CDBG",
 				InitCommand=function(self)
-					-- This is dirty, But we dont want to use Globals.
-					self:SetTarget(self:GetParent():GetParent():GetParent():GetParent():GetParent():GetChild("CDBGCon"):GetChild("CDBG")):zoom(.23)
+					self:SetTarget(self:ForParent(5):GetChild("CDBGCon"):GetChild("CDBG")):zoom(.23)
 				end
 			}
 		}
@@ -214,7 +213,7 @@ return function(Style)
 				-- The ActorProxy's that contain all the CD Slices.
 				Def.ActorProxy {
 					InitCommand=function(self)
-						self:SetTarget(self:GetParent():GetParent():GetParent():GetParent():GetParent():GetParent():GetChild("Con"):GetChild("CDSlice"..i))
+						self:SetTarget(self:ForParent(6):GetChild("Con"):GetChild("CDSlice"..i))
 					end
 				}
 			}
