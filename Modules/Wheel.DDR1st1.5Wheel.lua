@@ -19,6 +19,18 @@ local DiffNames={
 	"EDIT" -- Difficulty_Edit
 }
 
+-- Difficulty Chart Names based on Meter.
+local DiffChartNames={
+	"SIMPLE", -- 1 feet
+	"MODERATE", -- 2 feet
+	"ORDINARY", -- 3 feet
+	"SUPERIOR", -- 4 feet
+	"MARVELOUS", -- 5 feet
+	"GENUINE", -- 6 feet
+	"PARAMOUNT", -- 7 feet
+	"EXORBITANT", -- 8 feet
+}
+
 -- We define the curent song if no song is selected.
 if not CurSong then CurSong = 1 end
 
@@ -138,6 +150,9 @@ local function MoveDifficulty(self,offset,Songs)
 	
 	-- We grab the Difficulty Text and and change them to the names from the Difficulty Names.
 	self:GetChild("Difficulty"):settext(DiffNames[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]])
+	
+	-- Set the name of the Chart Difficulty.
+	self:GetChild("DiffChart"):settext(DiffChartNames[DiffCount])
 end
 
 return function(Style)
@@ -210,7 +225,7 @@ return function(Style)
 			Name="CD"..i,
 			OnCommand=function(self)
 				-- We set FOV/Field Of Vision to get a dept effect.
-				self:rotationz(180-((360/9)*(i-5))):CenterX():y(SCREEN_CENTER_Y-80):rotationx(-52):SetFOV(80)
+				self:rotationz((180-(9360/9)*(i-5))*-1):CenterX():y(SCREEN_CENTER_Y-80):rotationx(-52):SetFOV(80)
 			end,
 			-- The Container of the Slices.
 			Def.ActorFrame{
@@ -259,12 +274,13 @@ return function(Style)
 			MoveDifficulty(self,0,Songs)
 		end,
 		
+		-- Play Music at start of screen,.
 		PlayCurrentSongCommand=function(self)
 			SOUND:PlayMusicPart(Songs[CurSong][1]:GetMusicPath(),Songs[CurSong][1]:GetSampleStart(),Songs[CurSong][1]:GetSampleLength(),0,0,true)
 		end,
 		
 		-- Do stuff when a user presses left on Pad or Menu buttons.
-		MenuLeftCommand=function(self) MoveSelection(self,1,Songs) MoveDifficulty(self,0,Songs)
+		MenuLeftCommand=function(self) MoveSelection(self,-1,Songs) MoveDifficulty(self,0,Songs)
 			self:GetChild("Left"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
@@ -273,7 +289,7 @@ return function(Style)
 		end,
 		
 		-- Do stuff when a user presses Right on Pad or Menu buttons.
-		MenuRightCommand=function(self) MoveSelection(self,-1,Songs) MoveDifficulty(self,0,Songs)
+		MenuRightCommand=function(self) MoveSelection(self,1,Songs) MoveDifficulty(self,0,Songs)
 			self:GetChild("Right"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
@@ -282,10 +298,10 @@ return function(Style)
 		end,
 		
 		-- Do stuff when a user presses the Down on Pad or Menu buttons.
-		MenuDownCommand=function(self) MoveDifficulty(self,1,Songs) end,
+		MenuDownCommand=function(self) MoveDifficulty(self,-1,Songs) end,
 		
 		-- Do stuff when a user presses the Down on Pad or Menu buttons.
-		MenuUpCommand=function(self) MoveDifficulty(self,-1,Songs) end,
+		MenuUpCommand=function(self) MoveDifficulty(self,1,Songs) end,
 		
 		-- Do stuff when a user presses the Back on Pad or Menu buttons.
 		BackCommand=function(self) 
@@ -440,8 +456,17 @@ return function(Style)
 			OnCommand=function(self) self:xy(SCREEN_CENTER_X+120,SCREEN_CENTER_Y+50):rotationz(90):diffuse(1,0,0,1) end,
 			ColourCommand=function(self) self:sleep(0.02):diffuse(0,0,1,1):sleep(0.02):diffuse(1,1,1,1):sleep(0.02):diffuse(1,0,0,1) end
 		},
-		
+				
 		-- The Difficulty Feet Meter.
-		Diff..{OnCommand=function(self) self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y+130) end}
+		Diff..{OnCommand=function(self) self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y+130) end},
+		
+		-- The Difficulty Chart Names based on Meter.
+		Def.BitmapText{
+			Name="DiffChart",
+			Font="_open sans 40px",
+			OnCommand=function(self)
+				self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y+150):diffuse(1,1,0,1):strokecolor(0,0,1,1):zoom(.5)
+			end
+		}
 	}
 end
