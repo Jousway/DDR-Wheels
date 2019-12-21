@@ -243,6 +243,7 @@ return function(Style)
 		local pos = CurSong+i-11
 		if pos > #Songs then pos = (CurSong+i-11)-#Songs end
 		if pos < 1 then pos = #Songs+(CurSong+i-11) end
+		if pos > #Songs then pos = 1 CurSong = 1 end
 		
 		-- We load a Banner once, We use ActorProxy to copy it, This is lighter than loading the Banner for every Slice. 
 		CDslice[#CDslice+1] = Def.Sprite{
@@ -555,9 +556,9 @@ return function(Style)
 		-- Load the Difficulty Text.
 		Def.BitmapText{
 			Name="Difficulty",
-			Font="Common Normal",
+			Font="_open sans 40px",
 			OnCommand=function(self)
-				self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y-110)
+				self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y-110):zoom(.5)
 			end
 		},
 		
