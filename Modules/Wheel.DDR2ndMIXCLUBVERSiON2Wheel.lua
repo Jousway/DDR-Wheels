@@ -171,6 +171,7 @@ local function MoveDifficulty(self,offset,Songs)
 	self:GetChild("DiffChart"):settext(DiffChartNames[DiffCount]):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]])
 end
 
+-- This is the main function, Its the function that contains the wheel.
 return function(Style)
 
 	-- Load the songs from the Songs.Loader module.
@@ -273,7 +274,7 @@ return function(Style)
 		Diff[#Diff+1] = Def.Sprite {
 			Name="Feet"..i,
 			Texture=THEME:GetPathG("","Feet.png"),
-			InitCommand=function(self) self:zoomx(-.3):zoomy(.3):x(30*(i-5)) end
+			InitCommand=function(self) self:zoomx(-.3):zoomy(.3):x(25*(i-5)) end
 		}
 	end
 	
@@ -316,10 +317,10 @@ return function(Style)
 		end,
 		
 		-- Do stuff when a user presses the Down on Pad or Menu buttons.
-		MenuDownCommand=function(self) MoveDifficulty(self,-1,Songs) end,
+		MenuDownCommand=function(self) MoveDifficulty(self,1,Songs) end,
 		
 		-- Do stuff when a user presses the Down on Pad or Menu buttons.
-		MenuUpCommand=function(self) MoveDifficulty(self,1,Songs) end,
+		MenuUpCommand=function(self) MoveDifficulty(self,-1,Songs) end,
 		
 		-- Do stuff when a user presses the Back on Pad or Menu buttons.
 		BackCommand=function(self) 
@@ -330,7 +331,7 @@ return function(Style)
 					GAMESTATE:UnjoinPlayer(self.pn)
 					Joined[self.pn] = false
 					
-					-- A Player left, Change bakc to Single.
+					-- A Player left, Change back to Single.
 					self:GetChild("Style"):settext("SINGLE")
 				else
 					-- Go to the previous screen.
