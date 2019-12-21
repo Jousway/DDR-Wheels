@@ -592,8 +592,8 @@ return function(Style)
 						PROFILEMAN:SaveProfile(PLAYER_2)
 						
 						-- Set the Current Steps to use.
-						GAMESTATE:SetCurrentSteps(PLAYER_1,Songs[CurSong][DiffPos[PLAYER_1]])
-						GAMESTATE:SetCurrentSteps(PLAYER_2,Songs[CurSong][DiffPos[PLAYER_2]])
+						GAMESTATE:SetCurrentSteps(PLAYER_1,Songs[CurSong][DiffPos[PLAYER_1]+1])
+						GAMESTATE:SetCurrentSteps(PLAYER_2,Songs[CurSong][DiffPos[PLAYER_2]+1])
 					else
 				
 						-- If we are single player, Use Single.
@@ -603,7 +603,7 @@ return function(Style)
 						PROFILEMAN:SaveProfile(self.pn)
 					
 						-- Set the Current Step to use.
-					GAMESTATE:SetCurrentSteps(self.pn,Songs[CurSong][DiffPos[self.pn]])
+					GAMESTATE:SetCurrentSteps(self.pn,Songs[CurSong][DiffPos[self.pn]+1])
 					end
 				
 					-- We want to go to player options when people doublepress, So we set the StartOptions to true,
