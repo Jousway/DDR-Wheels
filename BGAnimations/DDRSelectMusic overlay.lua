@@ -3,7 +3,8 @@ local Wheels = {
 	"DDR1st1.5Wheel",
 	"DDR2ndMIXCLUBVERSiON2Wheel",
 	"DDR3rdMixPlusWheel",
-	"DDR4thMixPlusWheel"
+	"DDR4thMixPlusWheel",
+	"DDR5thMixWheel"
 }
 
 -- The Styles that are defined for the game mode.
@@ -11,7 +12,6 @@ local GameModeStyles = {
 	["dance"] = "dance_single",
 	["pump"] = "pump_single",
 }
-
 
 -- The last defined wheel, Its like smart shuffle, We dont want to get the same wheel twice.
 if not Last then Last = 0 end
@@ -28,4 +28,6 @@ local function RandButNotLast(Amount)
 end
 
 --Return the Def table that contains all the stuff, Check the module folder for the wheels.
-return LoadModule("Wheel."..Wheels[RandButNotLast(#Wheels)]..".lua")(GameModeStyles[GAMESTATE:GetCurrentGame():GetName()] or "dance_single")
+--return LoadModule("Wheel."..Wheels[RandButNotLast(#Wheels)]..".lua")(GameModeStyles[GAMESTATE:GetCurrentGame():GetName()] or "dance_single")
+
+return LoadModule("Wheel."..Wheels[5]..".lua")(GameModeStyles[GAMESTATE:GetCurrentGame():GetName()] or "dance_single")
