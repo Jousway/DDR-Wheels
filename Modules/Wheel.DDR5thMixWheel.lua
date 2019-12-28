@@ -59,42 +59,46 @@ local function MoveSelection(self,offset,Songs)
 	if XOffset < 1 then XOffset = 13 end
 
 	if offset ~= 0 then
-	for i = 1,13 do	
-		local transform = ((i - XOffset)*(i - XOffset))*3
+		for i = 1,13 do	
+			local transform = ((i - XOffset)*(i - XOffset))*3
 		
-		if DecOffset < i and DecOffset > XOffset then
-			transform =	((13 - i + XOffset)*(13 - i + XOffset))*3
-		end
+			if DecOffset < i and DecOffset > XOffset then
+				transform =	((13 - i + XOffset)*(13 - i + XOffset))*3
+			end
 		
-		if IncOffset > i and DecOffset < XOffset then
-			transform =	((13 + i - XOffset)*(13 + i - XOffset))*3
-		end
+			if IncOffset > i and DecOffset < XOffset then
+				transform =	((13 + i - XOffset)*(13 + i - XOffset))*3
+			end
 		
-		local pos = CurSong+(6*offset)
+			local pos = CurSong+(6*offset)
 		
-		if pos > #Songs then pos = (CurSong+(18*offset))-#Songs end
-		if pos < 1 then pos = #Songs+(CurSong+(18*offset)) end
+			if pos > #Songs then pos = (CurSong+(18*offset))-#Songs end
+			if pos < 1 then pos = #Songs+(CurSong+(18*offset)) end
 		
-		self:GetChild("Wheel"):GetChild("Container"..i):linear(.1):x(transform):addy((offset*-45))
-		if (i == IncOffset and offset == -1) or (i == DecOffset and offset == 1) then
-			self:GetChild("Wheel"):GetChild("Container"..i):sleep(0):addy((offset*-45)*-13)
-			self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Title"):settext(Songs[pos][1]:GetDisplayMainTitle())
+			self:GetChild("Wheel"):GetChild("Container"..i):linear(.1):x(transform):addy((offset*-45))
+			if (i == IncOffset and offset == -1) or (i == DecOffset and offset == 1) then
+				self:GetChild("Wheel"):GetChild("Container"..i):sleep(0):addy((offset*-45)*-13)
+				self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Title"):settext(Songs[pos][1]:GetDisplayMainTitle())
 							
-			self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Title"):zoom(.7):y(-10):maxwidth(400)
-			if Songs[pos][1]:GetDisplaySubTitle() ~= "" then 
-				self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Title"):zoom(.4):y(-12):maxwidth(650)
-			end 	
+				self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Title"):zoom(.7):y(-10):maxwidth(400)
+				if Songs[pos][1]:GetDisplaySubTitle() ~= "" then 
+					self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Title"):zoom(.4):y(-12):maxwidth(650)
+				end 	
 			
-			self:GetChild("Wheel"):GetChild("Container"..i):GetChild("SubTitle"):settext(Songs[pos][1]:GetDisplaySubTitle())
-			self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Artist"):settext("/"..Songs[pos][1]:GetDisplayArtist())
+				self:GetChild("Wheel"):GetChild("Container"..i):GetChild("SubTitle"):settext(Songs[pos][1]:GetDisplaySubTitle())
+				self:GetChild("Wheel"):GetChild("Container"..i):GetChild("Artist"):settext("/"..Songs[pos][1]:GetDisplayArtist())
+			end
 		end
-	end
+	
+		self:GetChild("BannerUnderlay"):Load(Songs[CurSong][1]:GetBannerPath())
+		self:GetChild("BannerUnderlay"):zoom(DDR.Resize(self:GetChild("BannerUnderlay"):GetWidth(),self:GetChild("BannerUnderlay"):GetHeight(),256,80))
+	
+		self:GetChild("BannerOverlay"):diffusealpha(1):linear(.1):diffusealpha(0):sleep(0):queuecommand("Load"):diffusealpha(1)
+	
+		self:GetChild("CDTitle"):linear(.05):zoomy(0):sleep(0):queuecommand("Load")
 	end
 	
-	self:GetChild("BannerUnderlay"):Load(Songs[CurSong][1]:GetBannerPath())
-	self:GetChild("BannerUnderlay"):zoom(DDR.Resize(self:GetChild("BannerUnderlay"):GetWidth(),self:GetChild("BannerUnderlay"):GetHeight(),256,80))
-	
-	self:GetChild("BannerOverlay"):diffusealpha(1):linear(.1):diffusealpha(0):sleep(0):queuecommand("Load"):diffusealpha(1)
+	self:GetChild("Dance"):SetAllStateDelays(14/Songs[CurSong][1]:GetDisplayBpms()[2])
 	
 	for i = 1,6 do
 		self:GetChild("Diffs"):GetChild("DiffName1P"..i):GetChild("DiffBG"):diffusealpha(0)
@@ -180,10 +184,12 @@ local function MoveSelection(self,offset,Songs)
 	
 	DDR.CountingNumbers(self:GetChild("BPM_AFT"):GetChild("BPM"),self:GetChild("BPM_AFT"):GetChild("BPM"):GetText(),string.format("%.0f",Songs[CurSong][1]:GetDisplayBpms()[2]),.1)
 	
-	-- Stop all the music playing, Which is the Song Music
-	SOUND:StopMusic()
-	-- Play Current selected Song Music.
-	SOUND:PlayMusicPart(Songs[CurSong][1]:GetMusicPath(),Songs[CurSong][1]:GetSampleStart(),Songs[CurSong][1]:GetSampleLength(),0,0,true)
+	if offset ~= 0 then
+		-- Stop all the music playing, Which is the Song Music
+		SOUND:StopMusic()
+		-- Play Current selected Song Music.
+		SOUND:PlayMusicPart(Songs[CurSong][1]:GetMusicPath(),Songs[CurSong][1]:GetSampleStart(),Songs[CurSong][1]:GetSampleLength(),0,0,true)
+	end
 end
 
 -- We use this function to do an effect on the content of the music wheel when we switch to next screen.
@@ -571,6 +577,7 @@ return function(Style)
 		},
 		
 		Def.Sprite{
+			Name="Dance",
 			Texture=THEME:GetPathG("","Dance"),
 			OnCommand=function(self)
 				self:xy(SCREEN_CENTER_X-68, SCREEN_CENTER_Y-150):zoom(.15)
@@ -594,8 +601,22 @@ return function(Style)
 					:xy(SCREEN_CENTER_X-200, SCREEN_CENTER_Y-90)
 			end,
 			LoadCommand=function(self) 
-			self:Load(Songs[CurSong][1]:GetBannerPath())
-				:zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),256,80))
+				self:Load(Songs[CurSong][1]:GetBannerPath())
+					:zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),256,80))
+			end
+		},
+		
+		Def.Sprite{
+			Name="CDTitle",
+			InitCommand=function(self)
+				self:Load(Songs[CurSong][1]:GetCDTitlePath())
+					:zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),60,60))
+					:xy(SCREEN_CENTER_X-100, SCREEN_CENTER_Y-100)
+			end,
+			LoadCommand=function(self) 
+				self:Load(Songs[CurSong][1]:GetCDTitlePath())
+					:zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),60,60)):zoomy(0)
+					:linear(.05):zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),60,60))
 			end
 		},
 		
