@@ -62,19 +62,15 @@ local function ChangeSelection(self,offset,Songs)
 		-- Position of song
 		local pos = CurSong+i
 		
-		-- i2 value.
-		local i2 = i
-		
 		-- If offset is reverse, Do extra math.
 		if offset < 0 then 
 			sleep = (i - 7)*offset 
 			pos = pos - 8
-			i2 = i2 - 8
 		end
-		
+			
 		-- Put position between limits.
-		if pos > #Songs then pos = (CurSong+i2)-#Songs end
-		if pos < 1 then pos = #Songs+(CurSong+i2) end
+		while pos > #Songs do pos = pos-#Songs end
+		while pos < 1 do pos = #Songs+pos end
 		
 		-- For every banner on current row load the next banner.
 		self:GetChild("Banners"):GetChild(CurRow..i):GetChild("BannerCon"):GetChild("Banner"):Load(Songs[pos][1]:GetBannerPath())
@@ -310,9 +306,8 @@ return function(Style)
 	
 		-- Position of current song, We want the middle banner at start.
 		local pos = CurSong+i-4
-		if pos > #Songs then pos = (CurSong+i-4)-#Songs end
-		if pos < 1 then pos = #Songs+(CurSong+i-4) end
-		if pos > #Songs then pos = 1 CurSong = 1 end
+		while pos > #Songs do pos = pos-#Songs end
+		while pos < 1 do pos = #Songs+pos end
 		
 		-- The difficulty container for the slider.
 		local DiffDisplay = Def.ActorFrame{Name="DiffCon"}
