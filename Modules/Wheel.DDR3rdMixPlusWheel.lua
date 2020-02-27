@@ -130,8 +130,8 @@ local function MoveSelection(self,offset,Songs)
 	local pos = CurSong+(10*offset)
 	
 	-- The Position is checked if its withing Song limits.
-	if pos > #Songs then pos = (CurSong+(10*offset))-#Songs end
-	if pos < 1 then pos = #Songs+(CurSong+(10*offset)) end
+	while pos > #Songs do pos = pos-#Songs end
+	while pos < 1 do pos = #Songs+pos end
 	
 	-- We check if the song has a banner, We use this for the CDs, If there is no banner, use white.png
 	if Songs[pos][1]:HasBanner() then
@@ -241,9 +241,8 @@ return function(Style)
 	
 		-- Position of current song, We want the cd in the front, So its the one we change.
 		local pos = CurSong+i-11
-		if pos > #Songs then pos = (CurSong+i-11)-#Songs end
-		if pos < 1 then pos = #Songs+(CurSong+i-11) end
-		if pos > #Songs then pos = 1 CurSong = 1 end
+		while pos > #Songs do pos = pos-#Songs end
+		while pos < 1 do pos = #Songs+pos end
 		
 		-- We load a Banner once, We use ActorProxy to copy it, This is lighter than loading the Banner for every Slice. 
 		CDslice[#CDslice+1] = Def.Sprite{
