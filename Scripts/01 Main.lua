@@ -54,6 +54,32 @@ function DDR.Resize(width,height,setwidth,sethight)
 	end
 end
 
+-- TO WRITE DOC.
+function DDR.CountingNumbers(self,NumStart,NumEnd,Duration)
+	self:stoptweening()
+
+	DDR.Cur = 1
+	DDR.Count = {}
+		
+	local Length = (NumEnd - NumStart)/10
+	if string.format("%.0f",Length) == "0" then Length = 1 end
+	if string.format("%.0f",Length) == "-0" then Length = -1 end
+	
+	if not self:GetCommand("Count") then
+		self:addcommand("Count",function(self) 
+			self:settext(DDR.Count[DDR.Cur])
+			DDR.Cur = DDR.Cur + 1 
+		end)
+	end
+	
+	for n = NumStart,NumEnd,string.format("%.0f",Length) do	
+		DDR.Count[#DDR.Count+1] = string.format("%.0f",n)
+		self:sleep(Duration/10):queuecommand("Count")
+	end
+	DDR.Count[#DDR.Count+1] = string.format("%.0f",NumEnd)
+	self:sleep(Duration/10):queuecommand("Count")
+end
+
 -- Main Input Function.
 -- We use this so we can do ButtonCommand.
 -- Example: MenuLeftCommand=function(self) end.
