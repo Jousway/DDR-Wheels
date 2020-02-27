@@ -72,8 +72,8 @@ local function MoveSelection(self,offset,Songs)
 		
 			local pos = CurSong+(6*offset)
 		
-			if pos > #Songs then pos = (CurSong+(18*offset))-#Songs end
-			if pos < 1 then pos = #Songs+(CurSong+(18*offset)) end
+			while pos > #Songs do pos = pos-#Songs end
+			while pos < 1 do pos = #Songs+pos end
 		
 			self:GetChild("Wheel"):GetChild("Container"..i):linear(.1):x(transform):addy((offset*-45))
 			if (i == IncOffset and offset == -1) or (i == DecOffset and offset == 1) then
@@ -224,9 +224,8 @@ return function(Style)
 		local offset = i - 7
 		
 		local pos = CurSong+i-7
-		if pos > #Songs then pos = (CurSong+i-7)-#Songs end
-		if pos < 1 then pos = #Songs+(CurSong+i-7) end
-		if pos > #Songs then pos = 1 CurSong = 1 end
+		while pos > #Songs do pos = pos-#Songs end
+		while pos < 1 do pos = #Songs+pos end
 		
 		Wheel[#Wheel+1] = Def.ActorFrame{
 			Name="Container"..i,
