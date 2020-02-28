@@ -34,6 +34,9 @@ local DiffChartNames={
 -- We define the curent song if no song is selected.
 if not CurSong then CurSong = 1 end
 
+-- We define the current group to be empty if no group is defined.
+if not CurGroup then GurGroup = "" end
+
 -- The player joined.
 if not Joined then Joined = {} end
 
@@ -82,32 +85,102 @@ local function MoveSelection(self,offset,Songs)
 	while pos > #Songs do pos = pos-#Songs end
 	while pos < 1 do pos = #Songs+pos end
 	
-	-- We check if the song has a banner, We use this for the CDs, If there is no banner, use white.png
-	if Songs[pos][1]:HasBanner() then
-		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(Songs[pos][1]:GetBannerPath()) 
+	--Do a string check, If its a string, Its a group.
+	if type(Songs[pos]) ~= "string" then		
+		-- We check if the song has a banner, We use this for the CDs, If there is no banner, use white.png
+		if Songs[pos][1]:HasBanner() then
+			self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(Songs[pos][1]:GetBannerPath()) 
+		else
+			self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(THEME:GetPathG("","white.png")) 
+		end
+	
+		-- We make it so that the slices are always w512 h160, and then resize the CD slices so they fit as part of the CD.
+		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):setsize(512,160):SetCustomPosCoords(self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-23,0,self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+23,0):zoom(.4):y(-20)
+
+	--Only do the CD Banner change on 0 offset.
+	elseif offset == 0 then
+	
+		--For every CD do
+		for i = 1,9 do
+		
+			-- Reset pos for local usage
+			local pos = CurSong+i-5
+			
+			-- Stay within limits.
+			while pos > #Songs do pos = pos-#Songs end
+			while pos < 1 do pos = #Songs+pos end
+			
+			-- Do math for the CD slices we want to change at which location.
+			local CDSliceOffset = ChangeOffset + i - 1
+			
+			-- Same as CDOffset, Stay withing limits.
+			while CDSliceOffset > 9 do CDSliceOffset = CDSliceOffset - 9 end
+			while CDSliceOffset < 1 do CDSliceOffset = 1 + CDSliceOffset end
+		
+			--Check if it is a song.
+			if type(Songs[pos]) ~= "string" then
+			
+				-- We check if the song has a banner, We use this for the CDs, If there is no banner, use white.png
+				if Songs[pos][1]:HasBanner() then
+					self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):Load(Songs[pos][1]:GetBannerPath()) 
+				else
+					self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):Load(THEME:GetPathG("","white.png")) 
+				end
+	
+			--Else we just set it to a white image.
+			else
+				self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):Load(THEME:GetPathG("","white.png"))
+			end	
+			
+			-- We make it so that the slices are always w512 h160, and then resize the CD slices so they fit as part of the CD.
+			self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):setsize(512,160):SetCustomPosCoords(self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2-23,0,self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2-9,-80,-self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2+9,-80,-self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2+23,0):zoom(.4):y(-20)
+		end
 	else
-		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(THEME:GetPathG("","white.png")) 
+		--We are not on offset 0, Make it White.
+		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(THEME:GetPathG("","white.png"))
+		
+		-- We make it so that the slices are always w512 h160, and then resize the CD slices so they fit as part of the CD.
+		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):setsize(512,160):SetCustomPosCoords(self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-23,0,self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+23,0):zoom(.4):y(-20)
 	end
+
 	
-	-- We make it so that the slices are always w512 h160, and then resize the CD slices so they fit as part of the CD.
-	self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):setsize(512,160):SetCustomPosCoords(self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-23,0,self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+23,0):zoom(.4):y(-20)
+	-- Stop all the music playing, Which is the Song Music
+	SOUND:StopMusic()
 	
-	-- Set the Centered Banner.
-	self:GetChild("Banner"):Load(Songs[CurSong][1]:GetBannerPath())
+	-- Check if its a song again.
+	if type(Songs[CurSong]) ~= "string" then
+	
+		-- Check if a song has a banner, If it doesnt show song title.
+		if not Songs[CurSong][1]:HasBanner() then
+			self:GetChild("BannerText"):settext(Songs[CurSong][1]:GetDisplayMainTitle())
+		else
+			self:GetChild("BannerText"):settext("")
+		end
+	
+		-- Set the Centered Banner.
+		self:GetChild("Banner"):visible(true):Load(Songs[CurSong][1]:GetBannerPath())
+		
+		-- This is the same as Centered Banner, But for CDTitles.
+		self:GetChild("CDTitle"):visible(true):Load(Songs[CurSong][1]:GetCDTitlePath())
+		
+		-- Play Current selected Song Music.
+		SOUND:PlayMusicPart(Songs[CurSong][1]:GetMusicPath(),Songs[CurSong][1]:GetSampleStart(),Songs[CurSong][1]:GetSampleLength(),0,0,true)
+	
+	-- Its a group.
+	else
+		-- Set name to group.
+		self:GetChild("BannerText"):settext(Songs[CurSong])
+	
+		-- Hide banner and cdtitle.
+		self:GetChild("Banner"):visible(false)
+		self:GetChild("CDTitle"):visible(false)
+	end
 	
 	-- Resize the Centered Banner  to be w(512/8)*5 h(160/8)*5
 	self:GetChild("Banner"):zoom(DDR.Resize(self:GetChild("Banner"):GetWidth(),self:GetChild("Banner"):GetHeight(),(512/8)*5,(160/8)*5))
 	
-	-- This is the same as Centered Banner, But for CDTitles.
-	self:GetChild("CDTitle"):Load(Songs[CurSong][1]:GetCDTitlePath())
-	
 	-- Resize the CDTitles to be a max of w80 h80.
 	self:GetChild("CDTitle"):zoom(DDR.Resize(self:GetChild("CDTitle"):GetWidth(),self:GetChild("CDTitle"):GetHeight(),80,80))
-	
-	-- Stop all the music playing, Which is the Song Music
-	SOUND:StopMusic()
-	-- Play Current selected Song Music.
-	SOUND:PlayMusicPart(Songs[CurSong][1]:GetMusicPath(),Songs[CurSong][1]:GetSampleStart(),Songs[CurSong][1]:GetSampleLength(),0,0,true)
 end
 
 -- We use this function to do an effect on the content of the music wheel when we switch to next screen.
@@ -127,32 +200,42 @@ local CurDiff = 2
 -- Move the Difficulty (or change selection in this case).
 local function MoveDifficulty(self,offset,Songs)	
 	
-	-- Move the current difficulty + offset.
-	CurDiff = CurDiff + offset
+	-- Check if its a group
+	if type(Songs[CurSong]) == "string" then
 	
-	-- Stay withing limits, But ignoring the first selection because its the entire song.
-	if CurDiff > #Songs[CurSong] then CurDiff = 2 end
-	if CurDiff < 2 then CurDiff = #Songs[CurSong] end
+		-- If it is a group hide the diffs
+		self:GetChild("Diffs"):visible(false)
+		
+	-- Not a group
+	else	
+		self:GetChild("Diffs"):visible(true)
+		-- Move the current difficulty + offset.
+		CurDiff = CurDiff + offset
+	
+		-- Stay withing limits, But ignoring the first selection because its the entire song.
+		if CurDiff > #Songs[CurSong] then CurDiff = 2 end
+		if CurDiff < 2 then CurDiff = #Songs[CurSong] end
 
-	-- Run on every feet, A feet is a part of the Difficulty, We got a max of 8 feets.
-	for i = 1,8 do
-		self:GetChild("Diffs"):GetChild("Feet"..i):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]]):diffusealpha(0)
+		-- Run on every feet, A feet is a part of the Difficulty, We got a max of 8 feets.
+		for i = 1,8 do
+			self:GetChild("Diffs"):GetChild("Feet"..i):diffuse(DiffColors[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]]):diffusealpha(0)
+		end
+	
+		-- We get the Meter from the game, And make it so it stays between 8 which is the Max feets we support.
+		local DiffCount = Songs[CurSong][CurDiff]:GetMeter()
+		if DiffCount > 8 then  DiffCount = 8 end
+	
+		-- For every Meter value we got for the game, We show the amount of feets for the difficulty, And center them.
+		for i = 1,DiffCount do
+			self:GetChild("Diffs"):GetChild("Feet"..i):diffusealpha(1):x(30*(i-((DiffCount/2)+.5)))
+		end
+	
+		-- We grab the Difficulty Text and and change them to the names from the Difficulty Names.
+		self:GetChild("Difficulty"):settext(DiffNames[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]])
+	
+		-- Set the name of the Chart Difficulty.
+		self:GetChild("DiffChart"):settext(DiffChartNames[DiffCount])
 	end
-	
-	-- We get the Meter from the game, And make it so it stays between 8 which is the Max feets we support.
-	local DiffCount = Songs[CurSong][CurDiff]:GetMeter()
-	if DiffCount > 8 then  DiffCount = 8 end
-	
-	-- For every Meter value we got for the game, We show the amount of feets for the difficulty, And center them.
-	for i = 1,DiffCount do
-		self:GetChild("Diffs"):GetChild("Feet"..i):diffusealpha(1):x(30*(i-((DiffCount/2)+.5)))
-	end
-	
-	-- We grab the Difficulty Text and and change them to the names from the Difficulty Names.
-	self:GetChild("Difficulty"):settext(DiffNames[DDR.DiffTab[Songs[CurSong][CurDiff]:GetDifficulty()]])
-	
-	-- Set the name of the Chart Difficulty.
-	self:GetChild("DiffChart"):settext(DiffChartNames[DiffCount])
 end
 
 -- This is the main function, Its the function that contains the wheel.
@@ -160,6 +243,9 @@ return function(Style)
 
 	-- Load the songs from the Songs.Loader module.
 	local Songs = LoadModule("Songs.Loader.lua")(Style)
+	
+	-- Sort the Songs and Group.
+	local GroupsAndSongs = LoadModule("Group.Sort.lua")(Songs,CurGroup)
 	
 	-- We define here is we load the Options menu when people double press,
 	-- Because they need to double press it starts at false.
@@ -176,17 +262,23 @@ return function(Style)
 	
 		-- Position of current song, We want the cd in the front, So its the one we change.
 		local pos = CurSong+i-5
-		while pos > #Songs do pos = pos-#Songs end
-		while pos < 1 do pos = #Songs+pos end
+		
+		-- Stay within limits.
+		while pos > #GroupsAndSongs do pos = pos-#GroupsAndSongs end
+		while pos < 1 do pos = #GroupsAndSongs+pos end
 		
 		-- We load a Banner once, We use ActorProxy to copy it, This is lighter than loading the Banner for every Slice. 
 		CDslice[#CDslice+1] = Def.Sprite{
 			Name="CDSlice"..i,
-			-- Load the Banner.
-			Texture=Songs[pos][1]:GetBannerPath(),
+			-- Load white as fallback.
+			Texture=THEME:GetPathG("","white.png"),
 			OnCommand=function(self)
-				-- If the banner doesnt exist, Load white.png.
-				if not Songs[pos][1]:HasBanner() then self:Load(THEME:GetPathG("","white.png")) end
+				
+				-- Check if its a song.
+				if type(GroupsAndSongs[pos]) ~= "string" then
+					-- If the banner exist, Load Banner.png.
+					if GroupsAndSongs[pos][1]:HasBanner() then self:Load(GroupsAndSongs[pos][1]:GetBannerPath()) end
+				end
 				
 				-- Resize the Banner to the size of the slice.
 				self:setsize(512,160):SetCustomPosCoords(self:GetWidth()/2-23,0,self:GetWidth()/2-9,-80,-self:GetWidth()/2+9,-80,-self:GetWidth()/2+23,0):zoom(.4):y(-20)
@@ -270,16 +362,18 @@ return function(Style)
 			self:sleep(0.2):queuecommand("PlayCurrentSong")
 			
 			-- Initalize the Difficulties.
-			MoveDifficulty(self,0,Songs)
+			MoveDifficulty(self,0,GroupsAndSongs)
 		end,
 		
 		-- Play Music at start of screen,.
 		PlayCurrentSongCommand=function(self)
-			SOUND:PlayMusicPart(Songs[CurSong][1]:GetMusicPath(),Songs[CurSong][1]:GetSampleStart(),Songs[CurSong][1]:GetSampleLength(),0,0,true)
+			if type(GroupsAndSongs[CurSong]) ~= "string" then
+				SOUND:PlayMusicPart(GroupsAndSongs[CurSong][1]:GetMusicPath(),GroupsAndSongs[CurSong][1]:GetSampleStart(),GroupsAndSongs[CurSong][1]:GetSampleLength(),0,0,true)
+			end
 		end,
 		
 		-- Do stuff when a user presses left on Pad or Menu buttons.
-		MenuLeftCommand=function(self) MoveSelection(self,-1,Songs) MoveDifficulty(self,0,Songs)
+		MenuLeftCommand=function(self) MoveSelection(self,-1,GroupsAndSongs) MoveDifficulty(self,0,GroupsAndSongs)
 			self:GetChild("Left"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
@@ -288,7 +382,7 @@ return function(Style)
 		end,
 		
 		-- Do stuff when a user presses Right on Pad or Menu buttons.
-		MenuRightCommand=function(self) MoveSelection(self,1,Songs) MoveDifficulty(self,0,Songs)
+		MenuRightCommand=function(self) MoveSelection(self,1,GroupsAndSongs) MoveDifficulty(self,0,GroupsAndSongs)
 			self:GetChild("Right"):stoptweening()
 			-- Play the colour effect 5 times.
 			for i = 1,5 do
@@ -297,10 +391,10 @@ return function(Style)
 		end,
 		
 		-- Do stuff when a user presses the Down on Pad or Menu buttons.
-		MenuDownCommand=function(self) MoveDifficulty(self,1,Songs) end,
+		MenuDownCommand=function(self) MoveDifficulty(self,1,GroupsAndSongs) end,
 		
 		-- Do stuff when a user presses the Down on Pad or Menu buttons.
-		MenuUpCommand=function(self) MoveDifficulty(self,-1,Songs) end,
+		MenuUpCommand=function(self) MoveDifficulty(self,-1,GroupsAndSongs) end,
 		
 		-- Do stuff when a user presses the Back on Pad or Menu buttons.
 		BackCommand=function(self) 
@@ -329,46 +423,71 @@ return function(Style)
 			-- Check if player is joined.
 			if Joined[self.pn] then 
 			
-				--We use PlayMode_Regular for now.
-				GAMESTATE:SetCurrentPlayMode("PlayMode_Regular")
+				-- Check if we are on a group.
+				if type(GroupsAndSongs[CurSong]) == "string" then
 				
-				--Set the song we want to play.
-				GAMESTATE:SetCurrentSong(Songs[CurSong][1])
-				
-				-- Check if 2 players are joined.
-				if Joined[PLAYER_1] and Joined[PLAYER_2] then
-				
-					-- If they are, We will use Versus.
-					GAMESTATE:SetCurrentStyle('versus')
+					-- Check if we are on the same group thats currently open,
+					-- If not we set the curent group to our new selection.
+					if CurGroup ~= GroupsAndSongs[CurSong] then			
+						CurGroup = GroupsAndSongs[CurSong]
+						
+					-- Same group, Close it.
+					else
+						CurGroup = ""
+					end
 					
-					-- Save Profiles.
-					PROFILEMAN:SaveProfile(PLAYER_1)
-					PROFILEMAN:SaveProfile(PLAYER_2)
+					-- Reset the groups location so we dont bug.
+					GroupsAndSongs = LoadModule("Group.Sort.lua")(Songs,"")
+					MoveSelection(self,0,GroupsAndSongs)
 					
-					-- Set the Current Steps to use.
-					GAMESTATE:SetCurrentSteps(PLAYER_1,Songs[CurSong][CurDiff])
-					GAMESTATE:SetCurrentSteps(PLAYER_2,Songs[CurSong][CurDiff])
+					-- Set the current group.
+					GroupsAndSongs = LoadModule("Group.Sort.lua")(Songs,CurGroup)
+					MoveSelection(self,0,GroupsAndSongs)
+					
+				-- Not on a group, Start song.
 				else
 				
-					-- If we are single player, Use Single.
-					GAMESTATE:SetCurrentStyle('single')
+					--We use PlayMode_Regular for now.
+					GAMESTATE:SetCurrentPlayMode("PlayMode_Regular")
+				
+					--Set the song we want to play.
+					GAMESTATE:SetCurrentSong(GroupsAndSongs[CurSong][1])
+				
+					-- Check if 2 players are joined.
+					if Joined[PLAYER_1] and Joined[PLAYER_2] then
+				
+						-- If they are, We will use Versus.
+						GAMESTATE:SetCurrentStyle('versus')
 					
-					-- Save Profile.
-					PROFILEMAN:SaveProfile(self.pn)
+						-- Save Profiles.
+						PROFILEMAN:SaveProfile(PLAYER_1)
+						PROFILEMAN:SaveProfile(PLAYER_2)
 					
-					-- Set the Current Step to use.
-					GAMESTATE:SetCurrentSteps(self.pn,Songs[CurSong][CurDiff])
+						-- Set the Current Steps to use.
+						GAMESTATE:SetCurrentSteps(PLAYER_1,GroupsAndSongs[CurSong][CurDiff])
+						GAMESTATE:SetCurrentSteps(PLAYER_2,GroupsAndSongs[CurSong][CurDiff])
+					else
+				
+						-- If we are single player, Use Single.
+						GAMESTATE:SetCurrentStyle('single')
+					
+						-- Save Profile.
+						PROFILEMAN:SaveProfile(self.pn)
+					
+						-- Set the Current Step to use.
+						GAMESTATE:SetCurrentSteps(self.pn,GroupsAndSongs[CurSong][CurDiff])
+					end
+				
+					-- We want to go to player options when people doublepress, So we set the StartOptions to true,
+					-- So when the player presses Start again, It will go to player options.
+					StartOptions = true
+				
+					-- Do the effects on actors.
+					StartSelection(self,GroupsAndSongs)
+				
+					-- Wait 0.4 sec before we go to next screen.
+					self:sleep(0.4):queuecommand("StartSong")
 				end
-				
-				-- We want to go to player options when people doublepress, So we set the StartOptions to true,
-				-- So when the player presses Start again, It will go to player options.
-				StartOptions = true
-				
-				-- Do the effects on actors.
-				StartSelection(self,Songs)
-				
-				-- Wait 0.4 sec before we go to next screen.
-				self:sleep(0.4):queuecommand("StartSong")
 			else
 				-- If no player is active Join.
 				GAMESTATE:JoinPlayer(self.pn)
@@ -383,7 +502,7 @@ return function(Style)
 				if Joined[PLAYER_1] and Joined[PLAYER_2] then
 					self:GetChild("Style"):settext("VERSUS")
 				end
-			end			
+			end
 		end,
 		
 		-- Change to ScreenGameplay.
@@ -408,17 +527,56 @@ return function(Style)
 		-- Load the Global Centered Banner.
 		Def.Sprite{
 			Name="Banner",
-			Texture=Songs[CurSong][1]:GetBannerPath(),
+			Texture=THEME:GetPathG("","white.png"),
 			OnCommand=function(self)
+				-- Check if we are on song
+				if type(GroupsAndSongs[CurSong]) ~= "string" then
+					self:visible(true):Load(GroupsAndSongs[CurSong][1]:GetBannerPath())
+					
+				-- Not on song, hide banner.
+				else
+					self:visible(false)
+				end
+			
 				self:CenterX():y(SCREEN_CENTER_Y-80):zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),(512/8)*5,(160/8)*5))
 			end				
+		},
+		
+		-- Global Centered Banner Text, Incase there is no banner.
+		Def.BitmapText{
+			Name="BannerText",
+			Font="_open sans 40px",
+			OnCommand=function(self)
+				-- Check if we are on group.
+				if type(GroupsAndSongs[CurSong]) == "string" then
+					self:settext(GroupsAndSongs[1])
+					
+				-- not group.
+				else
+					-- Check if we have banner, if not, set text to song title.
+					if not GroupsAndSongs[CurSong][1]:HasBanner() then
+						self:settext(GroupsAndSongs[CurSong][1]:GetDisplayMainTitle())
+					end
+				end
+
+				self:CenterX():y(SCREEN_CENTER_Y-80):diffuse(1,1,0,1):strokecolor(0,0,1,1):zoom(.5)
+			end
 		},
 		
 		-- Load the CDTitles.
 		Def.Sprite{
 			Name="CDTitle",
-			Texture=Songs[CurSong][1]:GetCDTitlePath(),
+			Texture=THEME:GetPathG("","white.png"),
 			OnCommand=function(self)
+				-- Check if its a song.
+				if type(GroupsAndSongs[CurSong]) ~= "string" then
+					self:visible(true):Load(GroupsAndSongs[CurSong][1]:GetCDTitlePath())
+				
+				-- Not song, Hide CDTitle. 
+				else
+					self:visible(false)
+				end
+				
 				self:xy(SCREEN_CENTER_X+220,SCREEN_CENTER_Y+120):zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),80,80))
 			end
 		},
