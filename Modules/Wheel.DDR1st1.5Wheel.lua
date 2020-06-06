@@ -440,6 +440,13 @@ return function(Style)
 					GroupsAndSongs = LoadModule("Group.Sort.lua")(Songs,"")
 					MoveSelection(self,0,GroupsAndSongs)
 					
+					-- Set CurSong to the right group.
+					for i,v in ipairs(GroupsAndSongs) do
+						if v == CurGroup then
+							CurSong = i
+						end
+					end
+
 					-- Set the current group.
 					GroupsAndSongs = LoadModule("Group.Sort.lua")(Songs,CurGroup)
 					MoveSelection(self,0,GroupsAndSongs)
