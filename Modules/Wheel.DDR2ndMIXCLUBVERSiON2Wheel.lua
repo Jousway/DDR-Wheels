@@ -157,6 +157,10 @@ local function MoveSelection(self,offset,Songs)
 		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):setsize(512,160):SetCustomPosCoords(self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-23,0,self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+23,0):zoom(.4):y(-20)
 	end
 
+	-- Stop all the music playing, Which is the Song Music
+	SOUND:StopMusic()
+
+	-- Check if its a song again.
 	if type(Songs[CurSong]) ~= "string" then
 	
 		-- Check if a song has a banner, If it doesnt show song title.
