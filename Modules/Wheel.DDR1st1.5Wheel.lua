@@ -65,7 +65,7 @@ local function MoveSelection(self,offset,Songs)
 
 	-- For every CD on the wheel, Rotate it by 360/9, 9 being the amount of CDs.
 	for i = 1,9 do
-		self:GetChild("CDCon"):GetChild("CD"..i):linear(.1):addrotationz((360/9)*offset)
+		self:GetChild("CDCon"):GetChild("CD"..i):linear(.1):addrotationz(((360/9)*offset)*-1)
 	end
 	
 	-- We Define the ChangeOffset, Which is used to define the location the CDs change Images.
@@ -316,7 +316,7 @@ return function(Style)
 			Name="CD"..i,
 			OnCommand=function(self)
 				-- We set FOV/Field Of Vision to get a dept effect.
-				self:rotationz((180-(9360/9)*(i-5))*-1):CenterX():y(SCREEN_CENTER_Y-80):rotationx(-52):SetFOV(80)
+				self:rotationz((180-(360/9)*(i-5))*-1):CenterX():y(SCREEN_CENTER_Y-80):rotationx(-52):SetFOV(80)
 			end,
 			-- The Container of the Slices.
 			Def.ActorFrame{

@@ -28,6 +28,6 @@ local function RandButNotLast(Amount)
 end
 
 --Return the Def table that contains all the stuff, Check the module folder for the wheels.
---return LoadModule("Wheel."..Wheels[RandButNotLast(#Wheels)]..".lua")(GameModeStyles[GAMESTATE:GetCurrentGame():GetName()] or "dance_single")
+return LoadModule("Wheel."..Wheels[RandButNotLast(#Wheels)]..".lua")(GameModeStyles[GAMESTATE:GetCurrentGame():GetName()] or "dance_single")
 
-return LoadModule("Wheel."..Wheels[1]..".lua")(GameModeStyles[GAMESTATE:GetCurrentGame():GetName()] or "dance_single")
+--return LoadModule("Wheel."..Wheels[4]..".lua")(GameModeStyles[GAMESTATE:GetCurrentGame():GetName()] or "dance_single")
