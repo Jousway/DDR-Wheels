@@ -188,6 +188,12 @@ local function MoveSelection(self,offset,Songs)
 		self:GetChild("Banner"):visible(false)
 		self:GetChild("CDTitle"):visible(false)
 	end
+
+	-- Resize the Centered Banner  to be w(512/8)*5 h(160/8)*5
+	self:GetChild("Banner"):zoom(DDR.Resize(self:GetChild("Banner"):GetWidth(),self:GetChild("Banner"):GetHeight(),(512/8)*5,(160/8)*5))
+	
+	-- Resize the CDTitles to be a max of w80 h80.
+	self:GetChild("CDTitle"):zoom(DDR.Resize(self:GetChild("CDTitle"):GetWidth(),self:GetChild("CDTitle"):GetHeight(),80,80))
 end
 
 -- We use this function to do an effect on the content of the music wheel when we switch to next screen.
