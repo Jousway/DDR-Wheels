@@ -141,17 +141,25 @@ local function MoveSelection(self,offset,Songs)
 					self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):Load(THEME:GetPathG("","white.png")) 
 				end
 	
-			--Else we just set it to a white image.
+			-- Its a song group, Set it to group banner, If it doesnt have a banner, Use white.png
 			else
-				self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):Load(THEME:GetPathG("","white.png"))
+				if SONGMAN:GetSongGroupBannerPath(Songs[pos]) ~= "" then
+					self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):Load(SONGMAN:GetSongGroupBannerPath(Songs[pos]))
+				else
+					self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):Load(THEME:GetPathG("","white.png")) 
+				end
 			end	
 			
 			-- We make it so that the slices are always w512 h160, and then resize the CD slices so they fit as part of the CD.
 			self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):setsize(512,160):SetCustomPosCoords(self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2-23,0,self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2-9,-80,-self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2+9,-80,-self:GetChild("Con"):GetChild("CDSlice"..CDSliceOffset):GetWidth()/2+23,0):zoom(.4):y(-20)
 		end
 	else
-		--We are not on offset 0, Make it White.
-		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(THEME:GetPathG("","white.png"))
+		-- Its a song group, Set it to group banner, If it doesnt have a banner, Use white.png
+		if SONGMAN:GetSongGroupBannerPath(Songs[pos]) ~= "" then
+			self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(SONGMAN:GetSongGroupBannerPath(Songs[pos]))
+		else
+			self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):Load(THEME:GetPathG("","white.png")) 
+		end
 		
 		-- We make it so that the slices are always w512 h160, and then resize the CD slices so they fit as part of the CD.
 		self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):setsize(512,160):SetCustomPosCoords(self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-23,0,self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2-9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+9,-80,-self:GetChild("Con"):GetChild("CDSlice"..ChangeOffset):GetWidth()/2+23,0):zoom(.4):y(-20)
@@ -181,11 +189,17 @@ local function MoveSelection(self,offset,Songs)
 	
 	-- Its a group.
 	else
-		-- Set name to group.
-		self:GetChild("BannerText"):settext(Songs[CurSong])
-	
-		-- Hide banner and cdtitle.
-		self:GetChild("Banner"):visible(false)
+		-- Set banner and hide cdtitle.
+		if SONGMAN:GetSongGroupBannerPath(Songs[CurSong]) ~= "" then
+			self:GetChild("Banner"):visible(true):Load(SONGMAN:GetSongGroupBannerPath(Songs[CurSong]))
+
+			self:GetChild("BannerText"):settext("")
+		else
+			self:GetChild("Banner"):visible(false)
+
+			-- Set name to group.
+			self:GetChild("BannerText"):settext(Songs[CurSong])
+		end
 		self:GetChild("CDTitle"):visible(false)
 	end
 
@@ -286,10 +300,16 @@ return function(Style)
 			-- Load white as fallback.
 			Texture=THEME:GetPathG("","white.png"),
 			OnCommand=function(self)
-				--- Check if its a song.
+				
+				-- Check if its a song.
 				if type(GroupsAndSongs[pos]) ~= "string" then
+
 					-- If the banner exist, Load Banner.png.
 					if GroupsAndSongs[pos][1]:HasBanner() then self:Load(GroupsAndSongs[pos][1]:GetBannerPath()) end
+				else
+
+					-- IF group banner exist, Load banner.png
+					if SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[pos]) ~= "" then self:Load(SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[pos])) end
 				end
 				
 				-- Resize the Banner to the size of the slice.
@@ -553,11 +573,15 @@ return function(Style)
 			OnCommand=function(self)
 				-- Check if we are on song
 				if type(GroupsAndSongs[CurSong]) ~= "string" then
-					self:visible(true):Load(GroupsAndSongs[CurSong][1]:GetBannerPath())
+					self:Load(GroupsAndSongs[CurSong][1]:GetBannerPath())
 					
-				-- Not on song, hide banner.
+				-- Not on song, Show group banner.
 				else
-					self:visible(false)
+					if SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[CurSong]) ~= "" then
+						self:Load(SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[CurSong]))
+					else
+						self:visible(false)
+					end
 				end
 			
 				self:CenterX():y(SCREEN_CENTER_Y-80):zoom(DDR.Resize(self:GetWidth(),self:GetHeight(),(512/8)*5,(160/8)*5))
@@ -571,8 +595,11 @@ return function(Style)
 			OnCommand=function(self)
 				-- Check if we are on group.
 				if type(GroupsAndSongs[CurSong]) == "string" then
-					self:settext(GroupsAndSongs[1])
-					
+					-- Check if group has banner, If so, Set text to empty
+					print(SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[CurSong]))
+					if SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[CurSong]) == "" then
+						self:settext(GroupsAndSongs[CurSong])
+					end					
 				-- not group.
 				else
 					-- Check if we have banner, if not, set text to song title.
