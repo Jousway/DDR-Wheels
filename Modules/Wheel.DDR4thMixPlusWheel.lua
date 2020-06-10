@@ -663,7 +663,6 @@ return function(Style)
 					Def.BitmapText{
 						Font="Common Normal",
 						Name="BannerText",
-						Text="",
 						OnCommand=function(self) 
 							self:maxwidth(250):strokecolor(0,0,0,1):zoom(.5)
 							-- Check if its a song.
@@ -923,7 +922,6 @@ return function(Style)
 		Def.BitmapText{
 			Font="_open sans 40px",
 			Name="Title",
-			Text="",
 			OnCommand=function(self) 
 				if type(GroupsAndSongs[CurSong]) ~= "string" then
 					if not GroupsAndSongs[CurSong][1]:HasBanner() then
@@ -942,7 +940,6 @@ return function(Style)
 		Def.BitmapText{
 			Font="_open sans 40px",
 			Name="Subtitle",
-			Text="",
 			OnCommand=function(self)
 				if type(GroupsAndSongs[CurSong]) ~= "string" then
 					if not GroupsAndSongs[CurSong][1]:HasBanner() then
