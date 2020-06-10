@@ -596,7 +596,6 @@ return function(Style)
 				-- Check if we are on group.
 				if type(GroupsAndSongs[CurSong]) == "string" then
 					-- Check if group has banner, If so, Set text to empty
-					print(SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[CurSong]))
 					if SONGMAN:GetSongGroupBannerPath(GroupsAndSongs[CurSong]) == "" then
 						self:settext(GroupsAndSongs[CurSong])
 					end					
