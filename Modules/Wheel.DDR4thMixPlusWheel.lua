@@ -400,7 +400,7 @@ local function StartSelection(self,Songs)
 	-- Loop for all the difficulties.
 	for i = 1,#Songs[CurSong]-1 do
 		-- If difficulties are more than 5, Stop the loop.
-		if i > 5 then break end
+		if i > 6 then break end
 		
 		-- For all the allowed meter feets set their colour and diffuse them.
 		for i2 = 1,9 do
@@ -520,9 +520,9 @@ return function(Style)
 						self:zoom(.075):x(-56+(15*i2)):diffusealpha(0)
 				
 						-- Check if its a song.
-						if type(GroupsAndSongs[CurSong]) ~= "string" then
+						if type(GroupsAndSongs[pos]) ~= "string" then
 							-- If difficulty exists.
-							if #Songs[pos] > i2 then
+							if #GroupsAndSongs[pos] > i2 then
 								-- Then diffuse to difficulty colour.
 								self:diffuse(DiffColors[DDR.DiffTab[GroupsAndSongs[pos][i2+1]:GetDifficulty()]])
 							end
@@ -540,9 +540,9 @@ return function(Style)
 						self:zoom(.125):x(-49+(15*i2))
 						
 						-- Check if its a song.
-						if type(GroupsAndSongs[CurSong]) ~= "string" then
+						if type(GroupsAndSongs[pos]) ~= "string" then
 							-- If difficulty exists.
-							if #Songs[pos] > i2 then
+							if #GroupsAndSongs[pos] > i2 then
 								-- Then diffuse to difficulties colour and set text to meter level.
 								self:diffuse(DiffColors[DDR.DiffTab[GroupsAndSongs[pos][i2+1]:GetDifficulty()]]):settext(GroupsAndSongs[pos][i2+1]:GetMeter())
 							end
